@@ -1,0 +1,30 @@
+#!/usr/bin/python
+
+import boto3
+import sys
+
+ec2=boto3.resource('ec2',region_name=sys.argv[1])
+ec2client=boto3.client('ec2',region_name=sys.argv[1])
+
+response=ec2client.describe_instances()
+runnigInstances=dict()
+stoppedinstances=dict()
+for i in response['Reservations']:
+    for j in i['Instances']:
+        for k in j['NetworkInterfaces']:
+            if j['State']['Name']=='running':
+                runnigInstances.update({j['InstanceId']:{ "VpcId":k['VpcId'],"SubnetId":j['SubnetId'],"PrivateIp" :k['PrivateIpAddress']}})
+            elif j['State']['Name']=='stopped':
+                stoppedinstances.update({j['InstanceId']:{"VpcId":k['VpcId'],"SubnetId":j['SubnetId'],"PrivateIp":j['PrivateIpAddress']}})
+#for m in runnigInstances:
+#    print(m +'\n')
+#    print('\n')
+print("runninginstances= "+'\n'+str(runnigInstances))
+print("----------------------------------------------------------------")
+print("stopped Instances="+'\n'+str(stoppedinstances))
+#for l in stopeedinstances:
+#    print(l +'\n')
+#   print('\n')
+print("===============================================================================================")
+print(runnigInstances['i-065b22e503ab12353'])
+print(type(runnigInstances))
